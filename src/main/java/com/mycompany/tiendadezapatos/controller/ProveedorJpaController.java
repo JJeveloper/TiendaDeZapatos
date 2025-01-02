@@ -11,10 +11,10 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import com.mycompany.tiendadezapatos.model.Marca;
+import com.mycompany.tiendadezapatos.model.CompraMercancia;
 import java.util.ArrayList;
 import java.util.List;
-import com.mycompany.tiendadezapatos.model.Mercancia;
+import com.mycompany.tiendadezapatos.model.Pedido;
 import com.mycompany.tiendadezapatos.model.Proveedor;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -26,9 +26,13 @@ import javax.persistence.Persistence;
  */
 public class ProveedorJpaController implements Serializable {
 
+    public ProveedorJpaController() {
+    }
+
     private EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_TiendaDeZapatos_jar_1.0-SNAPSHOTPU");
 
-    public ProveedorJpaController() {
+    public ProveedorJpaController(EntityManagerFactory emf) {
+        this.emf = emf;
     }
 
     public EntityManager getEntityManager() {
@@ -36,45 +40,45 @@ public class ProveedorJpaController implements Serializable {
     }
 
     public void create(Proveedor proveedor) {
-        if (proveedor.getMarcaList() == null) {
-            proveedor.setMarcaList(new ArrayList<Marca>());
+        if (proveedor.getCompraMercanciaList() == null) {
+            proveedor.setCompraMercanciaList(new ArrayList<CompraMercancia>());
         }
-        if (proveedor.getMercanciaList() == null) {
-            proveedor.setMercanciaList(new ArrayList<Mercancia>());
+        if (proveedor.getPedidoList() == null) {
+            proveedor.setPedidoList(new ArrayList<Pedido>());
         }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            List<Marca> attachedMarcaList = new ArrayList<Marca>();
-            for (Marca marcaListMarcaToAttach : proveedor.getMarcaList()) {
-                marcaListMarcaToAttach = em.getReference(marcaListMarcaToAttach.getClass(), marcaListMarcaToAttach.getIdmarca());
-                attachedMarcaList.add(marcaListMarcaToAttach);
+            List<CompraMercancia> attachedCompraMercanciaList = new ArrayList<CompraMercancia>();
+            for (CompraMercancia compraMercanciaListCompraMercanciaToAttach : proveedor.getCompraMercanciaList()) {
+                compraMercanciaListCompraMercanciaToAttach = em.getReference(compraMercanciaListCompraMercanciaToAttach.getClass(), compraMercanciaListCompraMercanciaToAttach.getIdcompraMercancia());
+                attachedCompraMercanciaList.add(compraMercanciaListCompraMercanciaToAttach);
             }
-            proveedor.setMarcaList(attachedMarcaList);
-            List<Mercancia> attachedMercanciaList = new ArrayList<Mercancia>();
-            for (Mercancia mercanciaListMercanciaToAttach : proveedor.getMercanciaList()) {
-                mercanciaListMercanciaToAttach = em.getReference(mercanciaListMercanciaToAttach.getClass(), mercanciaListMercanciaToAttach.getIdmercancia());
-                attachedMercanciaList.add(mercanciaListMercanciaToAttach);
+            proveedor.setCompraMercanciaList(attachedCompraMercanciaList);
+            List<Pedido> attachedPedidoList = new ArrayList<Pedido>();
+            for (Pedido pedidoListPedidoToAttach : proveedor.getPedidoList()) {
+                pedidoListPedidoToAttach = em.getReference(pedidoListPedidoToAttach.getClass(), pedidoListPedidoToAttach.getIdpedido());
+                attachedPedidoList.add(pedidoListPedidoToAttach);
             }
-            proveedor.setMercanciaList(attachedMercanciaList);
+            proveedor.setPedidoList(attachedPedidoList);
             em.persist(proveedor);
-            for (Marca marcaListMarca : proveedor.getMarcaList()) {
-                Proveedor oldProveedorIdproveedorOfMarcaListMarca = marcaListMarca.getProveedorIdproveedor();
-                marcaListMarca.setProveedorIdproveedor(proveedor);
-                marcaListMarca = em.merge(marcaListMarca);
-                if (oldProveedorIdproveedorOfMarcaListMarca != null) {
-                    oldProveedorIdproveedorOfMarcaListMarca.getMarcaList().remove(marcaListMarca);
-                    oldProveedorIdproveedorOfMarcaListMarca = em.merge(oldProveedorIdproveedorOfMarcaListMarca);
+            for (CompraMercancia compraMercanciaListCompraMercancia : proveedor.getCompraMercanciaList()) {
+                Proveedor oldProveedorIdproveedorOfCompraMercanciaListCompraMercancia = compraMercanciaListCompraMercancia.getProveedorIdproveedor();
+                compraMercanciaListCompraMercancia.setProveedorIdproveedor(proveedor);
+                compraMercanciaListCompraMercancia = em.merge(compraMercanciaListCompraMercancia);
+                if (oldProveedorIdproveedorOfCompraMercanciaListCompraMercancia != null) {
+                    oldProveedorIdproveedorOfCompraMercanciaListCompraMercancia.getCompraMercanciaList().remove(compraMercanciaListCompraMercancia);
+                    oldProveedorIdproveedorOfCompraMercanciaListCompraMercancia = em.merge(oldProveedorIdproveedorOfCompraMercanciaListCompraMercancia);
                 }
             }
-            for (Mercancia mercanciaListMercancia : proveedor.getMercanciaList()) {
-                Proveedor oldProveedorIdproveedorOfMercanciaListMercancia = mercanciaListMercancia.getProveedorIdproveedor();
-                mercanciaListMercancia.setProveedorIdproveedor(proveedor);
-                mercanciaListMercancia = em.merge(mercanciaListMercancia);
-                if (oldProveedorIdproveedorOfMercanciaListMercancia != null) {
-                    oldProveedorIdproveedorOfMercanciaListMercancia.getMercanciaList().remove(mercanciaListMercancia);
-                    oldProveedorIdproveedorOfMercanciaListMercancia = em.merge(oldProveedorIdproveedorOfMercanciaListMercancia);
+            for (Pedido pedidoListPedido : proveedor.getPedidoList()) {
+                Proveedor oldProveedorIdproveedorOfPedidoListPedido = pedidoListPedido.getProveedorIdproveedor();
+                pedidoListPedido.setProveedorIdproveedor(proveedor);
+                pedidoListPedido = em.merge(pedidoListPedido);
+                if (oldProveedorIdproveedorOfPedidoListPedido != null) {
+                    oldProveedorIdproveedorOfPedidoListPedido.getPedidoList().remove(pedidoListPedido);
+                    oldProveedorIdproveedorOfPedidoListPedido = em.merge(oldProveedorIdproveedorOfPedidoListPedido);
                 }
             }
             em.getTransaction().commit();
@@ -91,64 +95,64 @@ public class ProveedorJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Proveedor persistentProveedor = em.find(Proveedor.class, proveedor.getIdproveedor());
-            List<Marca> marcaListOld = persistentProveedor.getMarcaList();
-            List<Marca> marcaListNew = proveedor.getMarcaList();
-            List<Mercancia> mercanciaListOld = persistentProveedor.getMercanciaList();
-            List<Mercancia> mercanciaListNew = proveedor.getMercanciaList();
+            List<CompraMercancia> compraMercanciaListOld = persistentProveedor.getCompraMercanciaList();
+            List<CompraMercancia> compraMercanciaListNew = proveedor.getCompraMercanciaList();
+            List<Pedido> pedidoListOld = persistentProveedor.getPedidoList();
+            List<Pedido> pedidoListNew = proveedor.getPedidoList();
             List<String> illegalOrphanMessages = null;
-            for (Marca marcaListOldMarca : marcaListOld) {
-                if (!marcaListNew.contains(marcaListOldMarca)) {
+            for (CompraMercancia compraMercanciaListOldCompraMercancia : compraMercanciaListOld) {
+                if (!compraMercanciaListNew.contains(compraMercanciaListOldCompraMercancia)) {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain Marca " + marcaListOldMarca + " since its proveedorIdproveedor field is not nullable.");
+                    illegalOrphanMessages.add("You must retain CompraMercancia " + compraMercanciaListOldCompraMercancia + " since its proveedorIdproveedor field is not nullable.");
                 }
             }
-            for (Mercancia mercanciaListOldMercancia : mercanciaListOld) {
-                if (!mercanciaListNew.contains(mercanciaListOldMercancia)) {
+            for (Pedido pedidoListOldPedido : pedidoListOld) {
+                if (!pedidoListNew.contains(pedidoListOldPedido)) {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain Mercancia " + mercanciaListOldMercancia + " since its proveedorIdproveedor field is not nullable.");
+                    illegalOrphanMessages.add("You must retain Pedido " + pedidoListOldPedido + " since its proveedorIdproveedor field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
-            List<Marca> attachedMarcaListNew = new ArrayList<Marca>();
-            for (Marca marcaListNewMarcaToAttach : marcaListNew) {
-                marcaListNewMarcaToAttach = em.getReference(marcaListNewMarcaToAttach.getClass(), marcaListNewMarcaToAttach.getIdmarca());
-                attachedMarcaListNew.add(marcaListNewMarcaToAttach);
+            List<CompraMercancia> attachedCompraMercanciaListNew = new ArrayList<CompraMercancia>();
+            for (CompraMercancia compraMercanciaListNewCompraMercanciaToAttach : compraMercanciaListNew) {
+                compraMercanciaListNewCompraMercanciaToAttach = em.getReference(compraMercanciaListNewCompraMercanciaToAttach.getClass(), compraMercanciaListNewCompraMercanciaToAttach.getIdcompraMercancia());
+                attachedCompraMercanciaListNew.add(compraMercanciaListNewCompraMercanciaToAttach);
             }
-            marcaListNew = attachedMarcaListNew;
-            proveedor.setMarcaList(marcaListNew);
-            List<Mercancia> attachedMercanciaListNew = new ArrayList<Mercancia>();
-            for (Mercancia mercanciaListNewMercanciaToAttach : mercanciaListNew) {
-                mercanciaListNewMercanciaToAttach = em.getReference(mercanciaListNewMercanciaToAttach.getClass(), mercanciaListNewMercanciaToAttach.getIdmercancia());
-                attachedMercanciaListNew.add(mercanciaListNewMercanciaToAttach);
+            compraMercanciaListNew = attachedCompraMercanciaListNew;
+            proveedor.setCompraMercanciaList(compraMercanciaListNew);
+            List<Pedido> attachedPedidoListNew = new ArrayList<Pedido>();
+            for (Pedido pedidoListNewPedidoToAttach : pedidoListNew) {
+                pedidoListNewPedidoToAttach = em.getReference(pedidoListNewPedidoToAttach.getClass(), pedidoListNewPedidoToAttach.getIdpedido());
+                attachedPedidoListNew.add(pedidoListNewPedidoToAttach);
             }
-            mercanciaListNew = attachedMercanciaListNew;
-            proveedor.setMercanciaList(mercanciaListNew);
+            pedidoListNew = attachedPedidoListNew;
+            proveedor.setPedidoList(pedidoListNew);
             proveedor = em.merge(proveedor);
-            for (Marca marcaListNewMarca : marcaListNew) {
-                if (!marcaListOld.contains(marcaListNewMarca)) {
-                    Proveedor oldProveedorIdproveedorOfMarcaListNewMarca = marcaListNewMarca.getProveedorIdproveedor();
-                    marcaListNewMarca.setProveedorIdproveedor(proveedor);
-                    marcaListNewMarca = em.merge(marcaListNewMarca);
-                    if (oldProveedorIdproveedorOfMarcaListNewMarca != null && !oldProveedorIdproveedorOfMarcaListNewMarca.equals(proveedor)) {
-                        oldProveedorIdproveedorOfMarcaListNewMarca.getMarcaList().remove(marcaListNewMarca);
-                        oldProveedorIdproveedorOfMarcaListNewMarca = em.merge(oldProveedorIdproveedorOfMarcaListNewMarca);
+            for (CompraMercancia compraMercanciaListNewCompraMercancia : compraMercanciaListNew) {
+                if (!compraMercanciaListOld.contains(compraMercanciaListNewCompraMercancia)) {
+                    Proveedor oldProveedorIdproveedorOfCompraMercanciaListNewCompraMercancia = compraMercanciaListNewCompraMercancia.getProveedorIdproveedor();
+                    compraMercanciaListNewCompraMercancia.setProveedorIdproveedor(proveedor);
+                    compraMercanciaListNewCompraMercancia = em.merge(compraMercanciaListNewCompraMercancia);
+                    if (oldProveedorIdproveedorOfCompraMercanciaListNewCompraMercancia != null && !oldProveedorIdproveedorOfCompraMercanciaListNewCompraMercancia.equals(proveedor)) {
+                        oldProveedorIdproveedorOfCompraMercanciaListNewCompraMercancia.getCompraMercanciaList().remove(compraMercanciaListNewCompraMercancia);
+                        oldProveedorIdproveedorOfCompraMercanciaListNewCompraMercancia = em.merge(oldProveedorIdproveedorOfCompraMercanciaListNewCompraMercancia);
                     }
                 }
             }
-            for (Mercancia mercanciaListNewMercancia : mercanciaListNew) {
-                if (!mercanciaListOld.contains(mercanciaListNewMercancia)) {
-                    Proveedor oldProveedorIdproveedorOfMercanciaListNewMercancia = mercanciaListNewMercancia.getProveedorIdproveedor();
-                    mercanciaListNewMercancia.setProveedorIdproveedor(proveedor);
-                    mercanciaListNewMercancia = em.merge(mercanciaListNewMercancia);
-                    if (oldProveedorIdproveedorOfMercanciaListNewMercancia != null && !oldProveedorIdproveedorOfMercanciaListNewMercancia.equals(proveedor)) {
-                        oldProveedorIdproveedorOfMercanciaListNewMercancia.getMercanciaList().remove(mercanciaListNewMercancia);
-                        oldProveedorIdproveedorOfMercanciaListNewMercancia = em.merge(oldProveedorIdproveedorOfMercanciaListNewMercancia);
+            for (Pedido pedidoListNewPedido : pedidoListNew) {
+                if (!pedidoListOld.contains(pedidoListNewPedido)) {
+                    Proveedor oldProveedorIdproveedorOfPedidoListNewPedido = pedidoListNewPedido.getProveedorIdproveedor();
+                    pedidoListNewPedido.setProveedorIdproveedor(proveedor);
+                    pedidoListNewPedido = em.merge(pedidoListNewPedido);
+                    if (oldProveedorIdproveedorOfPedidoListNewPedido != null && !oldProveedorIdproveedorOfPedidoListNewPedido.equals(proveedor)) {
+                        oldProveedorIdproveedorOfPedidoListNewPedido.getPedidoList().remove(pedidoListNewPedido);
+                        oldProveedorIdproveedorOfPedidoListNewPedido = em.merge(oldProveedorIdproveedorOfPedidoListNewPedido);
                     }
                 }
             }
@@ -182,19 +186,19 @@ public class ProveedorJpaController implements Serializable {
                 throw new NonexistentEntityException("The proveedor with id " + id + " no longer exists.", enfe);
             }
             List<String> illegalOrphanMessages = null;
-            List<Marca> marcaListOrphanCheck = proveedor.getMarcaList();
-            for (Marca marcaListOrphanCheckMarca : marcaListOrphanCheck) {
+            List<CompraMercancia> compraMercanciaListOrphanCheck = proveedor.getCompraMercanciaList();
+            for (CompraMercancia compraMercanciaListOrphanCheckCompraMercancia : compraMercanciaListOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This Proveedor (" + proveedor + ") cannot be destroyed since the Marca " + marcaListOrphanCheckMarca + " in its marcaList field has a non-nullable proveedorIdproveedor field.");
+                illegalOrphanMessages.add("This Proveedor (" + proveedor + ") cannot be destroyed since the CompraMercancia " + compraMercanciaListOrphanCheckCompraMercancia + " in its compraMercanciaList field has a non-nullable proveedorIdproveedor field.");
             }
-            List<Mercancia> mercanciaListOrphanCheck = proveedor.getMercanciaList();
-            for (Mercancia mercanciaListOrphanCheckMercancia : mercanciaListOrphanCheck) {
+            List<Pedido> pedidoListOrphanCheck = proveedor.getPedidoList();
+            for (Pedido pedidoListOrphanCheckPedido : pedidoListOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This Proveedor (" + proveedor + ") cannot be destroyed since the Mercancia " + mercanciaListOrphanCheckMercancia + " in its mercanciaList field has a non-nullable proveedorIdproveedor field.");
+                illegalOrphanMessages.add("This Proveedor (" + proveedor + ") cannot be destroyed since the Pedido " + pedidoListOrphanCheckPedido + " in its pedidoList field has a non-nullable proveedorIdproveedor field.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);

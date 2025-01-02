@@ -54,8 +54,8 @@ public class Factura implements Serializable {
     @JoinColumn(name = "cliente_idcliente", referencedColumnName = "idcliente")
     @ManyToOne(optional = false)
     private Cliente clienteIdcliente;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "factura")
-    private List<MercanciaHasFactura> mercanciaHasFacturaList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "facturaIdfactura")
+    private List<DetalleFactura> detalleFacturaList;
 
     public Factura() {
     }
@@ -102,12 +102,12 @@ public class Factura implements Serializable {
         this.clienteIdcliente = clienteIdcliente;
     }
 
-    public List<MercanciaHasFactura> getMercanciaHasFacturaList() {
-        return mercanciaHasFacturaList;
+    public List<DetalleFactura> getDetalleFacturaList() {
+        return detalleFacturaList;
     }
 
-    public void setMercanciaHasFacturaList(List<MercanciaHasFactura> mercanciaHasFacturaList) {
-        this.mercanciaHasFacturaList = mercanciaHasFacturaList;
+    public void setDetalleFacturaList(List<DetalleFactura> detalleFacturaList) {
+        this.detalleFacturaList = detalleFacturaList;
     }
 
     @Override

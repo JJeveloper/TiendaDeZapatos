@@ -58,9 +58,8 @@ public class AgregarProveedorView extends javax.swing.JInternalFrame {
         jLabel4.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         jLabel4.setText("Correo");
 
-        btnIngresar.setBackground(new java.awt.Color(0, 123, 255));
         btnIngresar.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        btnIngresar.setForeground(new java.awt.Color(255, 255, 255));
+        btnIngresar.setForeground(new java.awt.Color(0, 0, 0));
         btnIngresar.setText("Ingresar");
         btnIngresar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -126,21 +125,21 @@ public class AgregarProveedorView extends javax.swing.JInternalFrame {
 
     private void btnIngresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIngresarActionPerformed
 
-//        boolean validacion = proveedorDAO.crearProveedor(txtRuc.getText(), txtNombre.getText(), txtTelefono.getText(), txtCorreo.getText());
-//
-//        if (validacion) {
-//            JOptionPane.showMessageDialog(this, "Se agrego el provedor con exito");
-//
+        boolean validacion = proveedorDAO.crearProveedor(txtRuc.getText(), txtNombre.getText(), txtTelefono.getText(), txtCorreo.getText());
+
+        if (validacion) {
+            JOptionPane.showMessageDialog(this, "Se agrego el provedor con exito");
+
             this.setVisible(false);
 
             AdministrarProveedoresView administrarProveedoresView = new AdministrarProveedoresView();
             administrarProveedoresView.setVisible(true);
             PrincipalView.panelPrincipal.add(administrarProveedoresView);
-//
-//        } else {
-//            JOptionPane.showMessageDialog(this, "LLene los campos correctamente");
-//
-//        }
+
+        } else {
+            JOptionPane.showMessageDialog(this, "LLene los campos correctamente");
+
+        }
     }//GEN-LAST:event_btnIngresarActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

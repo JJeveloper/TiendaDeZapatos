@@ -57,6 +57,35 @@ public class ProveedorDAO {
         return lista;
     }
 
+    /**
+     * compara que el nuevo codigo no se repita en la base de datos
+     *
+     * @param codigo
+     * @return verdadero si el codigo ya existe o falso si no existe
+     */
+    public boolean validarCodigoProveedor(String codigo) {
+        int cantidad = proveedorJpaController.findProveedorEntities().size();
+
+        for (int i = 0; i < cantidad; i++) {
+            if (codigo.equals(proveedorJpaController.findProveedorEntities().get(i).getCodigoproveedor())) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    public String obtenerCodigoProveedor(int id) {
+
+        try {
+            return proveedorJpaController.findProveedor(id).getCodigoproveedor();
+
+        } catch (Exception e) {
+        }
+        return null;
+
+    }
+
     public boolean crearProveedor(String ruc, String nombre, String telefono, String correo) {
         try {
 
@@ -66,7 +95,13 @@ public class ProveedorDAO {
 
                 Random r = new Random();
 
-                proveedor.setCodigoproveedor(r.nextInt(10000 + 1, 99999 + 1) + "");
+                String codigoProveedor = r.nextInt(10000 + 1, 99999 + 1) + "";
+
+                while (validarCodigoProveedor(codigoProveedor)) {
+                    codigoProveedor = r.nextInt(10000 + 1, 99999 + 1) + "";
+                }
+
+                proveedor.setCodigoproveedor(codigoProveedor);
 
                 proveedor.setNombre(nombre);
                 proveedor.setTelefono(telefono);
@@ -74,7 +109,6 @@ public class ProveedorDAO {
                 proveedor.setFechaderegistro(new Date());
 
                 proveedorJpaController.create(proveedor);
-
                 return true;
             }
 
@@ -87,22 +121,26 @@ public class ProveedorDAO {
         return false;
     }
 
-    public void actualizarProveedor(int id, String nombre, String telefono, String correo) {
+    public boolean actualizarProveedor(int id, String nombre, String telefono, String correo) {
 
         try {
 
-            Proveedor actualizarProveedor = proveedorJpaController.findProveedor(id);
-            actualizarProveedor.setNombre(nombre);
-            actualizarProveedor.setTelefono(telefono);
-            actualizarProveedor.setCorreo(correo);
-            proveedorJpaController.edit(actualizarProveedor);
+            if (!nombre.trim().isEmpty() && validarCorreo(correo) && validarTelefono(telefono)) {
+
+                Proveedor actualizarProveedor = proveedorJpaController.findProveedor(id);
+                actualizarProveedor.setNombre(nombre);
+                actualizarProveedor.setTelefono(telefono);
+                actualizarProveedor.setCorreo(correo);
+                proveedorJpaController.edit(actualizarProveedor);
+                return true;
+            }
 
         } catch (NonexistentEntityException ex) {
             System.out.println("NonexistentEntityException: No se pudo actualizar " + ex);
         } catch (Exception ex) {
             System.out.println("Exception: No se pudo actualizar " + ex);
         }
-
+        return false;
     }
 
     public boolean eliminarProveedor(int id) {

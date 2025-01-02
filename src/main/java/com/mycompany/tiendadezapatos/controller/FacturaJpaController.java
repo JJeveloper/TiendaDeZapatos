@@ -12,12 +12,13 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import com.mycompany.tiendadezapatos.model.Cliente;
+import com.mycompany.tiendadezapatos.model.DetalleFactura;
 import com.mycompany.tiendadezapatos.model.Factura;
-import com.mycompany.tiendadezapatos.model.MercanciaHasFactura;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 /**
  *
@@ -25,18 +26,22 @@ import javax.persistence.EntityManagerFactory;
  */
 public class FacturaJpaController implements Serializable {
 
+    public FacturaJpaController() {
+    }
+
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_TiendaDeZapatos_jar_1.0-SNAPSHOTPU");
+
     public FacturaJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 
     public void create(Factura factura) {
-        if (factura.getMercanciaHasFacturaList() == null) {
-            factura.setMercanciaHasFacturaList(new ArrayList<MercanciaHasFactura>());
+        if (factura.getDetalleFacturaList() == null) {
+            factura.setDetalleFacturaList(new ArrayList<DetalleFactura>());
         }
         EntityManager em = null;
         try {
@@ -47,24 +52,24 @@ public class FacturaJpaController implements Serializable {
                 clienteIdcliente = em.getReference(clienteIdcliente.getClass(), clienteIdcliente.getIdcliente());
                 factura.setClienteIdcliente(clienteIdcliente);
             }
-            List<MercanciaHasFactura> attachedMercanciaHasFacturaList = new ArrayList<MercanciaHasFactura>();
-            for (MercanciaHasFactura mercanciaHasFacturaListMercanciaHasFacturaToAttach : factura.getMercanciaHasFacturaList()) {
-                mercanciaHasFacturaListMercanciaHasFacturaToAttach = em.getReference(mercanciaHasFacturaListMercanciaHasFacturaToAttach.getClass(), mercanciaHasFacturaListMercanciaHasFacturaToAttach.getMercanciaHasFacturaPK());
-                attachedMercanciaHasFacturaList.add(mercanciaHasFacturaListMercanciaHasFacturaToAttach);
+            List<DetalleFactura> attachedDetalleFacturaList = new ArrayList<DetalleFactura>();
+            for (DetalleFactura detalleFacturaListDetalleFacturaToAttach : factura.getDetalleFacturaList()) {
+                detalleFacturaListDetalleFacturaToAttach = em.getReference(detalleFacturaListDetalleFacturaToAttach.getClass(), detalleFacturaListDetalleFacturaToAttach.getIddetalleFactura());
+                attachedDetalleFacturaList.add(detalleFacturaListDetalleFacturaToAttach);
             }
-            factura.setMercanciaHasFacturaList(attachedMercanciaHasFacturaList);
+            factura.setDetalleFacturaList(attachedDetalleFacturaList);
             em.persist(factura);
             if (clienteIdcliente != null) {
                 clienteIdcliente.getFacturaList().add(factura);
                 clienteIdcliente = em.merge(clienteIdcliente);
             }
-            for (MercanciaHasFactura mercanciaHasFacturaListMercanciaHasFactura : factura.getMercanciaHasFacturaList()) {
-                Factura oldFacturaOfMercanciaHasFacturaListMercanciaHasFactura = mercanciaHasFacturaListMercanciaHasFactura.getFactura();
-                mercanciaHasFacturaListMercanciaHasFactura.setFactura(factura);
-                mercanciaHasFacturaListMercanciaHasFactura = em.merge(mercanciaHasFacturaListMercanciaHasFactura);
-                if (oldFacturaOfMercanciaHasFacturaListMercanciaHasFactura != null) {
-                    oldFacturaOfMercanciaHasFacturaListMercanciaHasFactura.getMercanciaHasFacturaList().remove(mercanciaHasFacturaListMercanciaHasFactura);
-                    oldFacturaOfMercanciaHasFacturaListMercanciaHasFactura = em.merge(oldFacturaOfMercanciaHasFacturaListMercanciaHasFactura);
+            for (DetalleFactura detalleFacturaListDetalleFactura : factura.getDetalleFacturaList()) {
+                Factura oldFacturaIdfacturaOfDetalleFacturaListDetalleFactura = detalleFacturaListDetalleFactura.getFacturaIdfactura();
+                detalleFacturaListDetalleFactura.setFacturaIdfactura(factura);
+                detalleFacturaListDetalleFactura = em.merge(detalleFacturaListDetalleFactura);
+                if (oldFacturaIdfacturaOfDetalleFacturaListDetalleFactura != null) {
+                    oldFacturaIdfacturaOfDetalleFacturaListDetalleFactura.getDetalleFacturaList().remove(detalleFacturaListDetalleFactura);
+                    oldFacturaIdfacturaOfDetalleFacturaListDetalleFactura = em.merge(oldFacturaIdfacturaOfDetalleFacturaListDetalleFactura);
                 }
             }
             em.getTransaction().commit();
@@ -83,15 +88,15 @@ public class FacturaJpaController implements Serializable {
             Factura persistentFactura = em.find(Factura.class, factura.getIdfactura());
             Cliente clienteIdclienteOld = persistentFactura.getClienteIdcliente();
             Cliente clienteIdclienteNew = factura.getClienteIdcliente();
-            List<MercanciaHasFactura> mercanciaHasFacturaListOld = persistentFactura.getMercanciaHasFacturaList();
-            List<MercanciaHasFactura> mercanciaHasFacturaListNew = factura.getMercanciaHasFacturaList();
+            List<DetalleFactura> detalleFacturaListOld = persistentFactura.getDetalleFacturaList();
+            List<DetalleFactura> detalleFacturaListNew = factura.getDetalleFacturaList();
             List<String> illegalOrphanMessages = null;
-            for (MercanciaHasFactura mercanciaHasFacturaListOldMercanciaHasFactura : mercanciaHasFacturaListOld) {
-                if (!mercanciaHasFacturaListNew.contains(mercanciaHasFacturaListOldMercanciaHasFactura)) {
+            for (DetalleFactura detalleFacturaListOldDetalleFactura : detalleFacturaListOld) {
+                if (!detalleFacturaListNew.contains(detalleFacturaListOldDetalleFactura)) {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain MercanciaHasFactura " + mercanciaHasFacturaListOldMercanciaHasFactura + " since its factura field is not nullable.");
+                    illegalOrphanMessages.add("You must retain DetalleFactura " + detalleFacturaListOldDetalleFactura + " since its facturaIdfactura field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
@@ -101,13 +106,13 @@ public class FacturaJpaController implements Serializable {
                 clienteIdclienteNew = em.getReference(clienteIdclienteNew.getClass(), clienteIdclienteNew.getIdcliente());
                 factura.setClienteIdcliente(clienteIdclienteNew);
             }
-            List<MercanciaHasFactura> attachedMercanciaHasFacturaListNew = new ArrayList<MercanciaHasFactura>();
-            for (MercanciaHasFactura mercanciaHasFacturaListNewMercanciaHasFacturaToAttach : mercanciaHasFacturaListNew) {
-                mercanciaHasFacturaListNewMercanciaHasFacturaToAttach = em.getReference(mercanciaHasFacturaListNewMercanciaHasFacturaToAttach.getClass(), mercanciaHasFacturaListNewMercanciaHasFacturaToAttach.getMercanciaHasFacturaPK());
-                attachedMercanciaHasFacturaListNew.add(mercanciaHasFacturaListNewMercanciaHasFacturaToAttach);
+            List<DetalleFactura> attachedDetalleFacturaListNew = new ArrayList<DetalleFactura>();
+            for (DetalleFactura detalleFacturaListNewDetalleFacturaToAttach : detalleFacturaListNew) {
+                detalleFacturaListNewDetalleFacturaToAttach = em.getReference(detalleFacturaListNewDetalleFacturaToAttach.getClass(), detalleFacturaListNewDetalleFacturaToAttach.getIddetalleFactura());
+                attachedDetalleFacturaListNew.add(detalleFacturaListNewDetalleFacturaToAttach);
             }
-            mercanciaHasFacturaListNew = attachedMercanciaHasFacturaListNew;
-            factura.setMercanciaHasFacturaList(mercanciaHasFacturaListNew);
+            detalleFacturaListNew = attachedDetalleFacturaListNew;
+            factura.setDetalleFacturaList(detalleFacturaListNew);
             factura = em.merge(factura);
             if (clienteIdclienteOld != null && !clienteIdclienteOld.equals(clienteIdclienteNew)) {
                 clienteIdclienteOld.getFacturaList().remove(factura);
@@ -117,14 +122,14 @@ public class FacturaJpaController implements Serializable {
                 clienteIdclienteNew.getFacturaList().add(factura);
                 clienteIdclienteNew = em.merge(clienteIdclienteNew);
             }
-            for (MercanciaHasFactura mercanciaHasFacturaListNewMercanciaHasFactura : mercanciaHasFacturaListNew) {
-                if (!mercanciaHasFacturaListOld.contains(mercanciaHasFacturaListNewMercanciaHasFactura)) {
-                    Factura oldFacturaOfMercanciaHasFacturaListNewMercanciaHasFactura = mercanciaHasFacturaListNewMercanciaHasFactura.getFactura();
-                    mercanciaHasFacturaListNewMercanciaHasFactura.setFactura(factura);
-                    mercanciaHasFacturaListNewMercanciaHasFactura = em.merge(mercanciaHasFacturaListNewMercanciaHasFactura);
-                    if (oldFacturaOfMercanciaHasFacturaListNewMercanciaHasFactura != null && !oldFacturaOfMercanciaHasFacturaListNewMercanciaHasFactura.equals(factura)) {
-                        oldFacturaOfMercanciaHasFacturaListNewMercanciaHasFactura.getMercanciaHasFacturaList().remove(mercanciaHasFacturaListNewMercanciaHasFactura);
-                        oldFacturaOfMercanciaHasFacturaListNewMercanciaHasFactura = em.merge(oldFacturaOfMercanciaHasFacturaListNewMercanciaHasFactura);
+            for (DetalleFactura detalleFacturaListNewDetalleFactura : detalleFacturaListNew) {
+                if (!detalleFacturaListOld.contains(detalleFacturaListNewDetalleFactura)) {
+                    Factura oldFacturaIdfacturaOfDetalleFacturaListNewDetalleFactura = detalleFacturaListNewDetalleFactura.getFacturaIdfactura();
+                    detalleFacturaListNewDetalleFactura.setFacturaIdfactura(factura);
+                    detalleFacturaListNewDetalleFactura = em.merge(detalleFacturaListNewDetalleFactura);
+                    if (oldFacturaIdfacturaOfDetalleFacturaListNewDetalleFactura != null && !oldFacturaIdfacturaOfDetalleFacturaListNewDetalleFactura.equals(factura)) {
+                        oldFacturaIdfacturaOfDetalleFacturaListNewDetalleFactura.getDetalleFacturaList().remove(detalleFacturaListNewDetalleFactura);
+                        oldFacturaIdfacturaOfDetalleFacturaListNewDetalleFactura = em.merge(oldFacturaIdfacturaOfDetalleFacturaListNewDetalleFactura);
                     }
                 }
             }
@@ -158,12 +163,12 @@ public class FacturaJpaController implements Serializable {
                 throw new NonexistentEntityException("The factura with id " + id + " no longer exists.", enfe);
             }
             List<String> illegalOrphanMessages = null;
-            List<MercanciaHasFactura> mercanciaHasFacturaListOrphanCheck = factura.getMercanciaHasFacturaList();
-            for (MercanciaHasFactura mercanciaHasFacturaListOrphanCheckMercanciaHasFactura : mercanciaHasFacturaListOrphanCheck) {
+            List<DetalleFactura> detalleFacturaListOrphanCheck = factura.getDetalleFacturaList();
+            for (DetalleFactura detalleFacturaListOrphanCheckDetalleFactura : detalleFacturaListOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This Factura (" + factura + ") cannot be destroyed since the MercanciaHasFactura " + mercanciaHasFacturaListOrphanCheckMercanciaHasFactura + " in its mercanciaHasFacturaList field has a non-nullable factura field.");
+                illegalOrphanMessages.add("This Factura (" + factura + ") cannot be destroyed since the DetalleFactura " + detalleFacturaListOrphanCheckDetalleFactura + " in its detalleFacturaList field has a non-nullable facturaIdfactura field.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
@@ -227,5 +232,5 @@ public class FacturaJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

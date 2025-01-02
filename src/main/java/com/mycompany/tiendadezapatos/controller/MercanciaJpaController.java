@@ -6,18 +6,20 @@ package com.mycompany.tiendadezapatos.controller;
 
 import com.mycompany.tiendadezapatos.controller.exceptions.IllegalOrphanException;
 import com.mycompany.tiendadezapatos.controller.exceptions.NonexistentEntityException;
-import com.mycompany.tiendadezapatos.model.Mercancia;
 import java.io.Serializable;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import com.mycompany.tiendadezapatos.model.Proveedor;
-import com.mycompany.tiendadezapatos.model.MercanciaHasFactura;
+import com.mycompany.tiendadezapatos.model.Detallepedido;
 import java.util.ArrayList;
 import java.util.List;
+import com.mycompany.tiendadezapatos.model.DetalleFactura;
+import com.mycompany.tiendadezapatos.model.DetalleCompra;
+import com.mycompany.tiendadezapatos.model.Mercancia;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 /**
  *
@@ -25,46 +27,77 @@ import javax.persistence.EntityManagerFactory;
  */
 public class MercanciaJpaController implements Serializable {
 
+    public MercanciaJpaController() {
+    }
+
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_TiendaDeZapatos_jar_1.0-SNAPSHOTPU");
+
     public MercanciaJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
     }
 
     public void create(Mercancia mercancia) {
-        if (mercancia.getMercanciaHasFacturaList() == null) {
-            mercancia.setMercanciaHasFacturaList(new ArrayList<MercanciaHasFactura>());
+        if (mercancia.getDetallepedidoList() == null) {
+            mercancia.setDetallepedidoList(new ArrayList<Detallepedido>());
+        }
+        if (mercancia.getDetalleFacturaList() == null) {
+            mercancia.setDetalleFacturaList(new ArrayList<DetalleFactura>());
+        }
+        if (mercancia.getDetalleCompraList() == null) {
+            mercancia.setDetalleCompraList(new ArrayList<DetalleCompra>());
         }
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Proveedor proveedorIdproveedor = mercancia.getProveedorIdproveedor();
-            if (proveedorIdproveedor != null) {
-                proveedorIdproveedor = em.getReference(proveedorIdproveedor.getClass(), proveedorIdproveedor.getIdproveedor());
-                mercancia.setProveedorIdproveedor(proveedorIdproveedor);
+            List<Detallepedido> attachedDetallepedidoList = new ArrayList<Detallepedido>();
+            for (Detallepedido detallepedidoListDetallepedidoToAttach : mercancia.getDetallepedidoList()) {
+                detallepedidoListDetallepedidoToAttach = em.getReference(detallepedidoListDetallepedidoToAttach.getClass(), detallepedidoListDetallepedidoToAttach.getIddetallepedido());
+                attachedDetallepedidoList.add(detallepedidoListDetallepedidoToAttach);
             }
-            List<MercanciaHasFactura> attachedMercanciaHasFacturaList = new ArrayList<MercanciaHasFactura>();
-            for (MercanciaHasFactura mercanciaHasFacturaListMercanciaHasFacturaToAttach : mercancia.getMercanciaHasFacturaList()) {
-                mercanciaHasFacturaListMercanciaHasFacturaToAttach = em.getReference(mercanciaHasFacturaListMercanciaHasFacturaToAttach.getClass(), mercanciaHasFacturaListMercanciaHasFacturaToAttach.getMercanciaHasFacturaPK());
-                attachedMercanciaHasFacturaList.add(mercanciaHasFacturaListMercanciaHasFacturaToAttach);
+            mercancia.setDetallepedidoList(attachedDetallepedidoList);
+            List<DetalleFactura> attachedDetalleFacturaList = new ArrayList<DetalleFactura>();
+            for (DetalleFactura detalleFacturaListDetalleFacturaToAttach : mercancia.getDetalleFacturaList()) {
+                detalleFacturaListDetalleFacturaToAttach = em.getReference(detalleFacturaListDetalleFacturaToAttach.getClass(), detalleFacturaListDetalleFacturaToAttach.getIddetalleFactura());
+                attachedDetalleFacturaList.add(detalleFacturaListDetalleFacturaToAttach);
             }
-            mercancia.setMercanciaHasFacturaList(attachedMercanciaHasFacturaList);
+            mercancia.setDetalleFacturaList(attachedDetalleFacturaList);
+            List<DetalleCompra> attachedDetalleCompraList = new ArrayList<DetalleCompra>();
+            for (DetalleCompra detalleCompraListDetalleCompraToAttach : mercancia.getDetalleCompraList()) {
+                detalleCompraListDetalleCompraToAttach = em.getReference(detalleCompraListDetalleCompraToAttach.getClass(), detalleCompraListDetalleCompraToAttach.getIddetalleCompra());
+                attachedDetalleCompraList.add(detalleCompraListDetalleCompraToAttach);
+            }
+            mercancia.setDetalleCompraList(attachedDetalleCompraList);
             em.persist(mercancia);
-            if (proveedorIdproveedor != null) {
-                proveedorIdproveedor.getMercanciaList().add(mercancia);
-                proveedorIdproveedor = em.merge(proveedorIdproveedor);
+            for (Detallepedido detallepedidoListDetallepedido : mercancia.getDetallepedidoList()) {
+                Mercancia oldMercanciaIdmercanciaOfDetallepedidoListDetallepedido = detallepedidoListDetallepedido.getMercanciaIdmercancia();
+                detallepedidoListDetallepedido.setMercanciaIdmercancia(mercancia);
+                detallepedidoListDetallepedido = em.merge(detallepedidoListDetallepedido);
+                if (oldMercanciaIdmercanciaOfDetallepedidoListDetallepedido != null) {
+                    oldMercanciaIdmercanciaOfDetallepedidoListDetallepedido.getDetallepedidoList().remove(detallepedidoListDetallepedido);
+                    oldMercanciaIdmercanciaOfDetallepedidoListDetallepedido = em.merge(oldMercanciaIdmercanciaOfDetallepedidoListDetallepedido);
+                }
             }
-            for (MercanciaHasFactura mercanciaHasFacturaListMercanciaHasFactura : mercancia.getMercanciaHasFacturaList()) {
-                Mercancia oldMercanciaOfMercanciaHasFacturaListMercanciaHasFactura = mercanciaHasFacturaListMercanciaHasFactura.getMercancia();
-                mercanciaHasFacturaListMercanciaHasFactura.setMercancia(mercancia);
-                mercanciaHasFacturaListMercanciaHasFactura = em.merge(mercanciaHasFacturaListMercanciaHasFactura);
-                if (oldMercanciaOfMercanciaHasFacturaListMercanciaHasFactura != null) {
-                    oldMercanciaOfMercanciaHasFacturaListMercanciaHasFactura.getMercanciaHasFacturaList().remove(mercanciaHasFacturaListMercanciaHasFactura);
-                    oldMercanciaOfMercanciaHasFacturaListMercanciaHasFactura = em.merge(oldMercanciaOfMercanciaHasFacturaListMercanciaHasFactura);
+            for (DetalleFactura detalleFacturaListDetalleFactura : mercancia.getDetalleFacturaList()) {
+                Mercancia oldMercanciaIdmercanciaOfDetalleFacturaListDetalleFactura = detalleFacturaListDetalleFactura.getMercanciaIdmercancia();
+                detalleFacturaListDetalleFactura.setMercanciaIdmercancia(mercancia);
+                detalleFacturaListDetalleFactura = em.merge(detalleFacturaListDetalleFactura);
+                if (oldMercanciaIdmercanciaOfDetalleFacturaListDetalleFactura != null) {
+                    oldMercanciaIdmercanciaOfDetalleFacturaListDetalleFactura.getDetalleFacturaList().remove(detalleFacturaListDetalleFactura);
+                    oldMercanciaIdmercanciaOfDetalleFacturaListDetalleFactura = em.merge(oldMercanciaIdmercanciaOfDetalleFacturaListDetalleFactura);
+                }
+            }
+            for (DetalleCompra detalleCompraListDetalleCompra : mercancia.getDetalleCompraList()) {
+                Mercancia oldMercanciaIdmercanciaOfDetalleCompraListDetalleCompra = detalleCompraListDetalleCompra.getMercanciaIdmercancia();
+                detalleCompraListDetalleCompra.setMercanciaIdmercancia(mercancia);
+                detalleCompraListDetalleCompra = em.merge(detalleCompraListDetalleCompra);
+                if (oldMercanciaIdmercanciaOfDetalleCompraListDetalleCompra != null) {
+                    oldMercanciaIdmercanciaOfDetalleCompraListDetalleCompra.getDetalleCompraList().remove(detalleCompraListDetalleCompra);
+                    oldMercanciaIdmercanciaOfDetalleCompraListDetalleCompra = em.merge(oldMercanciaIdmercanciaOfDetalleCompraListDetalleCompra);
                 }
             }
             em.getTransaction().commit();
@@ -81,50 +114,92 @@ public class MercanciaJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Mercancia persistentMercancia = em.find(Mercancia.class, mercancia.getIdmercancia());
-            Proveedor proveedorIdproveedorOld = persistentMercancia.getProveedorIdproveedor();
-            Proveedor proveedorIdproveedorNew = mercancia.getProveedorIdproveedor();
-            List<MercanciaHasFactura> mercanciaHasFacturaListOld = persistentMercancia.getMercanciaHasFacturaList();
-            List<MercanciaHasFactura> mercanciaHasFacturaListNew = mercancia.getMercanciaHasFacturaList();
+            List<Detallepedido> detallepedidoListOld = persistentMercancia.getDetallepedidoList();
+            List<Detallepedido> detallepedidoListNew = mercancia.getDetallepedidoList();
+            List<DetalleFactura> detalleFacturaListOld = persistentMercancia.getDetalleFacturaList();
+            List<DetalleFactura> detalleFacturaListNew = mercancia.getDetalleFacturaList();
+            List<DetalleCompra> detalleCompraListOld = persistentMercancia.getDetalleCompraList();
+            List<DetalleCompra> detalleCompraListNew = mercancia.getDetalleCompraList();
             List<String> illegalOrphanMessages = null;
-            for (MercanciaHasFactura mercanciaHasFacturaListOldMercanciaHasFactura : mercanciaHasFacturaListOld) {
-                if (!mercanciaHasFacturaListNew.contains(mercanciaHasFacturaListOldMercanciaHasFactura)) {
+            for (Detallepedido detallepedidoListOldDetallepedido : detallepedidoListOld) {
+                if (!detallepedidoListNew.contains(detallepedidoListOldDetallepedido)) {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain MercanciaHasFactura " + mercanciaHasFacturaListOldMercanciaHasFactura + " since its mercancia field is not nullable.");
+                    illegalOrphanMessages.add("You must retain Detallepedido " + detallepedidoListOldDetallepedido + " since its mercanciaIdmercancia field is not nullable.");
+                }
+            }
+            for (DetalleFactura detalleFacturaListOldDetalleFactura : detalleFacturaListOld) {
+                if (!detalleFacturaListNew.contains(detalleFacturaListOldDetalleFactura)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain DetalleFactura " + detalleFacturaListOldDetalleFactura + " since its mercanciaIdmercancia field is not nullable.");
+                }
+            }
+            for (DetalleCompra detalleCompraListOldDetalleCompra : detalleCompraListOld) {
+                if (!detalleCompraListNew.contains(detalleCompraListOldDetalleCompra)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain DetalleCompra " + detalleCompraListOldDetalleCompra + " since its mercanciaIdmercancia field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
-            if (proveedorIdproveedorNew != null) {
-                proveedorIdproveedorNew = em.getReference(proveedorIdproveedorNew.getClass(), proveedorIdproveedorNew.getIdproveedor());
-                mercancia.setProveedorIdproveedor(proveedorIdproveedorNew);
+            List<Detallepedido> attachedDetallepedidoListNew = new ArrayList<Detallepedido>();
+            for (Detallepedido detallepedidoListNewDetallepedidoToAttach : detallepedidoListNew) {
+                detallepedidoListNewDetallepedidoToAttach = em.getReference(detallepedidoListNewDetallepedidoToAttach.getClass(), detallepedidoListNewDetallepedidoToAttach.getIddetallepedido());
+                attachedDetallepedidoListNew.add(detallepedidoListNewDetallepedidoToAttach);
             }
-            List<MercanciaHasFactura> attachedMercanciaHasFacturaListNew = new ArrayList<MercanciaHasFactura>();
-            for (MercanciaHasFactura mercanciaHasFacturaListNewMercanciaHasFacturaToAttach : mercanciaHasFacturaListNew) {
-                mercanciaHasFacturaListNewMercanciaHasFacturaToAttach = em.getReference(mercanciaHasFacturaListNewMercanciaHasFacturaToAttach.getClass(), mercanciaHasFacturaListNewMercanciaHasFacturaToAttach.getMercanciaHasFacturaPK());
-                attachedMercanciaHasFacturaListNew.add(mercanciaHasFacturaListNewMercanciaHasFacturaToAttach);
+            detallepedidoListNew = attachedDetallepedidoListNew;
+            mercancia.setDetallepedidoList(detallepedidoListNew);
+            List<DetalleFactura> attachedDetalleFacturaListNew = new ArrayList<DetalleFactura>();
+            for (DetalleFactura detalleFacturaListNewDetalleFacturaToAttach : detalleFacturaListNew) {
+                detalleFacturaListNewDetalleFacturaToAttach = em.getReference(detalleFacturaListNewDetalleFacturaToAttach.getClass(), detalleFacturaListNewDetalleFacturaToAttach.getIddetalleFactura());
+                attachedDetalleFacturaListNew.add(detalleFacturaListNewDetalleFacturaToAttach);
             }
-            mercanciaHasFacturaListNew = attachedMercanciaHasFacturaListNew;
-            mercancia.setMercanciaHasFacturaList(mercanciaHasFacturaListNew);
+            detalleFacturaListNew = attachedDetalleFacturaListNew;
+            mercancia.setDetalleFacturaList(detalleFacturaListNew);
+            List<DetalleCompra> attachedDetalleCompraListNew = new ArrayList<DetalleCompra>();
+            for (DetalleCompra detalleCompraListNewDetalleCompraToAttach : detalleCompraListNew) {
+                detalleCompraListNewDetalleCompraToAttach = em.getReference(detalleCompraListNewDetalleCompraToAttach.getClass(), detalleCompraListNewDetalleCompraToAttach.getIddetalleCompra());
+                attachedDetalleCompraListNew.add(detalleCompraListNewDetalleCompraToAttach);
+            }
+            detalleCompraListNew = attachedDetalleCompraListNew;
+            mercancia.setDetalleCompraList(detalleCompraListNew);
             mercancia = em.merge(mercancia);
-            if (proveedorIdproveedorOld != null && !proveedorIdproveedorOld.equals(proveedorIdproveedorNew)) {
-                proveedorIdproveedorOld.getMercanciaList().remove(mercancia);
-                proveedorIdproveedorOld = em.merge(proveedorIdproveedorOld);
+            for (Detallepedido detallepedidoListNewDetallepedido : detallepedidoListNew) {
+                if (!detallepedidoListOld.contains(detallepedidoListNewDetallepedido)) {
+                    Mercancia oldMercanciaIdmercanciaOfDetallepedidoListNewDetallepedido = detallepedidoListNewDetallepedido.getMercanciaIdmercancia();
+                    detallepedidoListNewDetallepedido.setMercanciaIdmercancia(mercancia);
+                    detallepedidoListNewDetallepedido = em.merge(detallepedidoListNewDetallepedido);
+                    if (oldMercanciaIdmercanciaOfDetallepedidoListNewDetallepedido != null && !oldMercanciaIdmercanciaOfDetallepedidoListNewDetallepedido.equals(mercancia)) {
+                        oldMercanciaIdmercanciaOfDetallepedidoListNewDetallepedido.getDetallepedidoList().remove(detallepedidoListNewDetallepedido);
+                        oldMercanciaIdmercanciaOfDetallepedidoListNewDetallepedido = em.merge(oldMercanciaIdmercanciaOfDetallepedidoListNewDetallepedido);
+                    }
+                }
             }
-            if (proveedorIdproveedorNew != null && !proveedorIdproveedorNew.equals(proveedorIdproveedorOld)) {
-                proveedorIdproveedorNew.getMercanciaList().add(mercancia);
-                proveedorIdproveedorNew = em.merge(proveedorIdproveedorNew);
+            for (DetalleFactura detalleFacturaListNewDetalleFactura : detalleFacturaListNew) {
+                if (!detalleFacturaListOld.contains(detalleFacturaListNewDetalleFactura)) {
+                    Mercancia oldMercanciaIdmercanciaOfDetalleFacturaListNewDetalleFactura = detalleFacturaListNewDetalleFactura.getMercanciaIdmercancia();
+                    detalleFacturaListNewDetalleFactura.setMercanciaIdmercancia(mercancia);
+                    detalleFacturaListNewDetalleFactura = em.merge(detalleFacturaListNewDetalleFactura);
+                    if (oldMercanciaIdmercanciaOfDetalleFacturaListNewDetalleFactura != null && !oldMercanciaIdmercanciaOfDetalleFacturaListNewDetalleFactura.equals(mercancia)) {
+                        oldMercanciaIdmercanciaOfDetalleFacturaListNewDetalleFactura.getDetalleFacturaList().remove(detalleFacturaListNewDetalleFactura);
+                        oldMercanciaIdmercanciaOfDetalleFacturaListNewDetalleFactura = em.merge(oldMercanciaIdmercanciaOfDetalleFacturaListNewDetalleFactura);
+                    }
+                }
             }
-            for (MercanciaHasFactura mercanciaHasFacturaListNewMercanciaHasFactura : mercanciaHasFacturaListNew) {
-                if (!mercanciaHasFacturaListOld.contains(mercanciaHasFacturaListNewMercanciaHasFactura)) {
-                    Mercancia oldMercanciaOfMercanciaHasFacturaListNewMercanciaHasFactura = mercanciaHasFacturaListNewMercanciaHasFactura.getMercancia();
-                    mercanciaHasFacturaListNewMercanciaHasFactura.setMercancia(mercancia);
-                    mercanciaHasFacturaListNewMercanciaHasFactura = em.merge(mercanciaHasFacturaListNewMercanciaHasFactura);
-                    if (oldMercanciaOfMercanciaHasFacturaListNewMercanciaHasFactura != null && !oldMercanciaOfMercanciaHasFacturaListNewMercanciaHasFactura.equals(mercancia)) {
-                        oldMercanciaOfMercanciaHasFacturaListNewMercanciaHasFactura.getMercanciaHasFacturaList().remove(mercanciaHasFacturaListNewMercanciaHasFactura);
-                        oldMercanciaOfMercanciaHasFacturaListNewMercanciaHasFactura = em.merge(oldMercanciaOfMercanciaHasFacturaListNewMercanciaHasFactura);
+            for (DetalleCompra detalleCompraListNewDetalleCompra : detalleCompraListNew) {
+                if (!detalleCompraListOld.contains(detalleCompraListNewDetalleCompra)) {
+                    Mercancia oldMercanciaIdmercanciaOfDetalleCompraListNewDetalleCompra = detalleCompraListNewDetalleCompra.getMercanciaIdmercancia();
+                    detalleCompraListNewDetalleCompra.setMercanciaIdmercancia(mercancia);
+                    detalleCompraListNewDetalleCompra = em.merge(detalleCompraListNewDetalleCompra);
+                    if (oldMercanciaIdmercanciaOfDetalleCompraListNewDetalleCompra != null && !oldMercanciaIdmercanciaOfDetalleCompraListNewDetalleCompra.equals(mercancia)) {
+                        oldMercanciaIdmercanciaOfDetalleCompraListNewDetalleCompra.getDetalleCompraList().remove(detalleCompraListNewDetalleCompra);
+                        oldMercanciaIdmercanciaOfDetalleCompraListNewDetalleCompra = em.merge(oldMercanciaIdmercanciaOfDetalleCompraListNewDetalleCompra);
                     }
                 }
             }
@@ -158,20 +233,29 @@ public class MercanciaJpaController implements Serializable {
                 throw new NonexistentEntityException("The mercancia with id " + id + " no longer exists.", enfe);
             }
             List<String> illegalOrphanMessages = null;
-            List<MercanciaHasFactura> mercanciaHasFacturaListOrphanCheck = mercancia.getMercanciaHasFacturaList();
-            for (MercanciaHasFactura mercanciaHasFacturaListOrphanCheckMercanciaHasFactura : mercanciaHasFacturaListOrphanCheck) {
+            List<Detallepedido> detallepedidoListOrphanCheck = mercancia.getDetallepedidoList();
+            for (Detallepedido detallepedidoListOrphanCheckDetallepedido : detallepedidoListOrphanCheck) {
                 if (illegalOrphanMessages == null) {
                     illegalOrphanMessages = new ArrayList<String>();
                 }
-                illegalOrphanMessages.add("This Mercancia (" + mercancia + ") cannot be destroyed since the MercanciaHasFactura " + mercanciaHasFacturaListOrphanCheckMercanciaHasFactura + " in its mercanciaHasFacturaList field has a non-nullable mercancia field.");
+                illegalOrphanMessages.add("This Mercancia (" + mercancia + ") cannot be destroyed since the Detallepedido " + detallepedidoListOrphanCheckDetallepedido + " in its detallepedidoList field has a non-nullable mercanciaIdmercancia field.");
+            }
+            List<DetalleFactura> detalleFacturaListOrphanCheck = mercancia.getDetalleFacturaList();
+            for (DetalleFactura detalleFacturaListOrphanCheckDetalleFactura : detalleFacturaListOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This Mercancia (" + mercancia + ") cannot be destroyed since the DetalleFactura " + detalleFacturaListOrphanCheckDetalleFactura + " in its detalleFacturaList field has a non-nullable mercanciaIdmercancia field.");
+            }
+            List<DetalleCompra> detalleCompraListOrphanCheck = mercancia.getDetalleCompraList();
+            for (DetalleCompra detalleCompraListOrphanCheckDetalleCompra : detalleCompraListOrphanCheck) {
+                if (illegalOrphanMessages == null) {
+                    illegalOrphanMessages = new ArrayList<String>();
+                }
+                illegalOrphanMessages.add("This Mercancia (" + mercancia + ") cannot be destroyed since the DetalleCompra " + detalleCompraListOrphanCheckDetalleCompra + " in its detalleCompraList field has a non-nullable mercanciaIdmercancia field.");
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
-            }
-            Proveedor proveedorIdproveedor = mercancia.getProveedorIdproveedor();
-            if (proveedorIdproveedor != null) {
-                proveedorIdproveedor.getMercanciaList().remove(mercancia);
-                proveedorIdproveedor = em.merge(proveedorIdproveedor);
             }
             em.remove(mercancia);
             em.getTransaction().commit();
@@ -227,5 +311,5 @@ public class MercanciaJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

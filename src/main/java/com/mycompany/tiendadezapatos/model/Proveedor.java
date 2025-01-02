@@ -13,7 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id; 
+import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -65,9 +65,9 @@ public class Proveedor implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date fechaderegistro;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "proveedorIdproveedor")
-    private List<Marca> marcaList;
+    private List<CompraMercancia> compraMercanciaList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "proveedorIdproveedor")
-    private List<Mercancia> mercanciaList;
+    private List<Pedido> pedidoList;
 
     public Proveedor() {
     }
@@ -142,20 +142,20 @@ public class Proveedor implements Serializable {
         this.fechaderegistro = fechaderegistro;
     }
 
-    public List<Marca> getMarcaList() {
-        return marcaList;
+    public List<CompraMercancia> getCompraMercanciaList() {
+        return compraMercanciaList;
     }
 
-    public void setMarcaList(List<Marca> marcaList) {
-        this.marcaList = marcaList;
+    public void setCompraMercanciaList(List<CompraMercancia> compraMercanciaList) {
+        this.compraMercanciaList = compraMercanciaList;
     }
 
-    public List<Mercancia> getMercanciaList() {
-        return mercanciaList;
+    public List<Pedido> getPedidoList() {
+        return pedidoList;
     }
 
-    public void setMercanciaList(List<Mercancia> mercanciaList) {
-        this.mercanciaList = mercanciaList;
+    public void setPedidoList(List<Pedido> pedidoList) {
+        this.pedidoList = pedidoList;
     }
 
     @Override

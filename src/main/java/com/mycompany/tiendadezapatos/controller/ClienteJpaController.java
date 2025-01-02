@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 /**
  *
@@ -24,10 +25,14 @@ import javax.persistence.EntityManagerFactory;
  */
 public class ClienteJpaController implements Serializable {
 
+    public ClienteJpaController() {
+    }
+
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("com.mycompany_TiendaDeZapatos_jar_1.0-SNAPSHOTPU");
+
     public ClienteJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
@@ -198,5 +203,5 @@ public class ClienteJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

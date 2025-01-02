@@ -16,6 +16,7 @@ public class PrincipalView extends javax.swing.JFrame {
     public PrincipalView() {
         initComponents();
         this.setLocationRelativeTo(null);
+
     }
 
     /**
@@ -29,28 +30,61 @@ public class PrincipalView extends javax.swing.JFrame {
 
         panelPrincipal = new javax.swing.JDesktopPane();
         menuBar = new javax.swing.JMenuBar();
+        jMenu3 = new javax.swing.JMenu();
+        mniVentas = new javax.swing.JMenuItem();
         fileMenu = new javax.swing.JMenu();
-        mniProveedor = new javax.swing.JMenuItem();
+        mniIngresarProveedor = new javax.swing.JMenuItem();
+        mniMercaderia = new javax.swing.JMenuItem();
+        mniCliente = new javax.swing.JMenuItem();
         exitMenuItem = new javax.swing.JMenuItem();
-        helpMenu = new javax.swing.JMenu();
-        contentMenuItem = new javax.swing.JMenuItem();
-        aboutMenuItem = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        mniAdministrarProveedor = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        mniHacerPedido = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         panelPrincipal.setBackground(new java.awt.Color(255, 255, 255));
 
-        fileMenu.setMnemonic('f');
-        fileMenu.setText("Ingreso");
+        jMenu3.setText("Ventas");
 
-        mniProveedor.setMnemonic('o');
-        mniProveedor.setText("Proveedor");
-        mniProveedor.addActionListener(new java.awt.event.ActionListener() {
+        mniVentas.setText("Ventas");
+        mniVentas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mniProveedorActionPerformed(evt);
+                mniVentasActionPerformed(evt);
             }
         });
-        fileMenu.add(mniProveedor);
+        jMenu3.add(mniVentas);
+
+        menuBar.add(jMenu3);
+
+        fileMenu.setMnemonic('f');
+        fileMenu.setText("Ingresar");
+
+        mniIngresarProveedor.setMnemonic('o');
+        mniIngresarProveedor.setText("Proveedor");
+        mniIngresarProveedor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mniIngresarProveedorActionPerformed(evt);
+            }
+        });
+        fileMenu.add(mniIngresarProveedor);
+
+        mniMercaderia.setText("Mercaderia");
+        mniMercaderia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mniMercaderiaActionPerformed(evt);
+            }
+        });
+        fileMenu.add(mniMercaderia);
+
+        mniCliente.setText("Cliente");
+        mniCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mniClienteActionPerformed(evt);
+            }
+        });
+        fileMenu.add(mniCliente);
 
         exitMenuItem.setMnemonic('x');
         exitMenuItem.setText("Exit");
@@ -63,18 +97,29 @@ public class PrincipalView extends javax.swing.JFrame {
 
         menuBar.add(fileMenu);
 
-        helpMenu.setMnemonic('h');
-        helpMenu.setText("Help");
+        jMenu2.setText("Administrar");
 
-        contentMenuItem.setMnemonic('c');
-        contentMenuItem.setText("Contents");
-        helpMenu.add(contentMenuItem);
+        mniAdministrarProveedor.setText("Proveedor");
+        mniAdministrarProveedor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mniAdministrarProveedorActionPerformed(evt);
+            }
+        });
+        jMenu2.add(mniAdministrarProveedor);
 
-        aboutMenuItem.setMnemonic('a');
-        aboutMenuItem.setText("About");
-        helpMenu.add(aboutMenuItem);
+        menuBar.add(jMenu2);
 
-        menuBar.add(helpMenu);
+        jMenu1.setText("Pedidos");
+
+        mniHacerPedido.setText("Hacer Pedidos");
+        mniHacerPedido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mniHacerPedidoActionPerformed(evt);
+            }
+        });
+        jMenu1.add(mniHacerPedido);
+
+        menuBar.add(jMenu1);
 
         setJMenuBar(menuBar);
 
@@ -96,12 +141,76 @@ public class PrincipalView extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
-    private void mniProveedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniProveedorActionPerformed
+    private void mniIngresarProveedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniIngresarProveedorActionPerformed
+
+        panelPrincipal.removeAll();
+        panelPrincipal.repaint();
 
         AgregarProveedorView agregarProveedorView = new AgregarProveedorView();
         agregarProveedorView.setVisible(true);
         panelPrincipal.add(agregarProveedorView);
-    }//GEN-LAST:event_mniProveedorActionPerformed
+
+    }//GEN-LAST:event_mniIngresarProveedorActionPerformed
+
+    private void mniAdministrarProveedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniAdministrarProveedorActionPerformed
+
+        panelPrincipal.removeAll();
+        panelPrincipal.repaint();
+
+        AdministrarProveedoresView administrarProveedoresView = new AdministrarProveedoresView();
+        administrarProveedoresView.setVisible(true);
+        panelPrincipal.add(administrarProveedoresView);
+
+    }//GEN-LAST:event_mniAdministrarProveedorActionPerformed
+
+    private void mniMercaderiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniMercaderiaActionPerformed
+
+        panelPrincipal.removeAll();
+        panelPrincipal.repaint();
+
+        SeleccionarProveedorView seleccionarProveedorView = new SeleccionarProveedorView();
+        seleccionarProveedorView.setVisible(true);
+
+        seleccionarProveedorView.setSeleccionarventana("agregarmercancia");
+
+        panelPrincipal.add(seleccionarProveedorView);
+    }//GEN-LAST:event_mniMercaderiaActionPerformed
+
+    private void mniHacerPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniHacerPedidoActionPerformed
+        panelPrincipal.removeAll();
+        panelPrincipal.repaint();
+
+        SeleccionarProveedorView seleccionarProveedorView = new SeleccionarProveedorView();
+        seleccionarProveedorView.setVisible(true);
+
+        seleccionarProveedorView.setSeleccionarventana("hacerpedido");
+
+        panelPrincipal.add(seleccionarProveedorView);
+    }//GEN-LAST:event_mniHacerPedidoActionPerformed
+
+    private void mniClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniClienteActionPerformed
+
+        panelPrincipal.removeAll();
+        panelPrincipal.repaint();
+
+        AgregarClienteView agregarClienteView = new AgregarClienteView();
+        agregarClienteView.setVisible(true);
+
+        panelPrincipal.add(agregarClienteView);
+
+
+    }//GEN-LAST:event_mniClienteActionPerformed
+
+    private void mniVentasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniVentasActionPerformed
+
+        panelPrincipal.removeAll();
+        panelPrincipal.repaint();
+
+        RealizarVentaView realizarVenta = new RealizarVentaView();
+        realizarVenta.setVisible(true);
+        
+        panelPrincipal.add(realizarVenta);
+    }//GEN-LAST:event_mniVentasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -139,13 +248,18 @@ public class PrincipalView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem aboutMenuItem;
-    private javax.swing.JMenuItem contentMenuItem;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
-    private javax.swing.JMenu helpMenu;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar menuBar;
-    private javax.swing.JMenuItem mniProveedor;
+    private javax.swing.JMenuItem mniAdministrarProveedor;
+    private javax.swing.JMenuItem mniCliente;
+    private javax.swing.JMenuItem mniHacerPedido;
+    private javax.swing.JMenuItem mniIngresarProveedor;
+    private javax.swing.JMenuItem mniMercaderia;
+    private javax.swing.JMenuItem mniVentas;
     public static javax.swing.JDesktopPane panelPrincipal;
     // End of variables declaration//GEN-END:variables
 

@@ -3,11 +3,17 @@
   <persistence-unit name="com.mycompany_TiendaDeZapatos_jar_1.0-SNAPSHOTPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <class>com.mycompany.tiendadezapatos.model.Marca</class>
-    <class>com.mycompany.tiendadezapatos.model.Mercancia</class>
     <class>com.mycompany.tiendadezapatos.model.MercanciaHasFactura</class>
     <class>com.mycompany.tiendadezapatos.model.Proveedor</class>
     <class>com.mycompany.tiendadezapatos.model.Cliente</class>
     <class>com.mycompany.tiendadezapatos.model.Factura</class>
+    <class>com.mycompany.tiendadezapatos.model.Mercancia</class>
+    <class>com.mycompany.tiendadezapatos.model.DetalleCompra</class>
+    <class>com.mycompany.tiendadezapatos.model.CompraMercancia</class>
+    <class>com.mycompany.tiendadezapatos.model.DetalleFactura</class>
+    <class>com.mycompany.tiendadezapatos.model.Pedido</class>
+    <class>com.mycompany.tiendadezapatos.model.Detallepedido</class>
+    <class>com.mycompany.tiendadezapatos.model.Actualizarprecio</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/tiendadezapatos?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
       <property name="javax.persistence.jdbc.user" value="root"/>

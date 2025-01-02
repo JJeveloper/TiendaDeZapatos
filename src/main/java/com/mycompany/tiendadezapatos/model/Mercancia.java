@@ -6,7 +6,6 @@ package com.mycompany.tiendadezapatos.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -15,14 +14,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  *
@@ -33,11 +28,13 @@ import javax.persistence.TemporalType;
 @NamedQueries({
     @NamedQuery(name = "Mercancia.findAll", query = "SELECT m FROM Mercancia m"),
     @NamedQuery(name = "Mercancia.findByIdmercancia", query = "SELECT m FROM Mercancia m WHERE m.idmercancia = :idmercancia"),
-    @NamedQuery(name = "Mercancia.findByFechadeingreso", query = "SELECT m FROM Mercancia m WHERE m.fechadeingreso = :fechadeingreso"),
+    @NamedQuery(name = "Mercancia.findByCodigo", query = "SELECT m FROM Mercancia m WHERE m.codigo = :codigo"),
     @NamedQuery(name = "Mercancia.findByNombre", query = "SELECT m FROM Mercancia m WHERE m.nombre = :nombre"),
     @NamedQuery(name = "Mercancia.findByStock", query = "SELECT m FROM Mercancia m WHERE m.stock = :stock"),
     @NamedQuery(name = "Mercancia.findByPrecioCompraUnidad", query = "SELECT m FROM Mercancia m WHERE m.precioCompraUnidad = :precioCompraUnidad"),
-    @NamedQuery(name = "Mercancia.findByPrecioVentaUnidad", query = "SELECT m FROM Mercancia m WHERE m.precioVentaUnidad = :precioVentaUnidad")})
+    @NamedQuery(name = "Mercancia.findByPrecioVentaUnidad", query = "SELECT m FROM Mercancia m WHERE m.precioVentaUnidad = :precioVentaUnidad"),
+    @NamedQuery(name = "Mercancia.obtenerMercanciaPorProveedor", query = "SELECT m FROM Mercancia m INNER JOIN m.detalleCompraList dc INNER JOIN dc.compraMercanciaIdcompraMercancia cm INNER JOIN cm.proveedorIdproveedor p WHERE p.idproveedor = :idproveedor"),
+    @NamedQuery(name = "Mercancia.actualizarStock", query = "UPDATE Mercancia m SET m.stock = s WHERE m.idmercancia = :id")})
 public class Mercancia implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -47,9 +44,8 @@ public class Mercancia implements Serializable {
     @Column(name = "idmercancia")
     private Integer idmercancia;
     @Basic(optional = false)
-    @Column(name = "fechadeingreso")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechadeingreso;
+    @Column(name = "codigo")
+    private String codigo;
     @Basic(optional = false)
     @Column(name = "nombre")
     private String nombre;
@@ -62,12 +58,13 @@ public class Mercancia implements Serializable {
     private BigDecimal precioCompraUnidad;
     @Basic(optional = false)
     @Column(name = "precio_venta_unidad")
-    private String precioVentaUnidad;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mercancia")
-    private List<MercanciaHasFactura> mercanciaHasFacturaList;
-    @JoinColumn(name = "proveedor_idproveedor", referencedColumnName = "idproveedor")
-    @ManyToOne(optional = false)
-    private Proveedor proveedorIdproveedor;
+    private BigDecimal precioVentaUnidad;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mercanciaIdmercancia")
+    private List<Detallepedido> detallepedidoList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mercanciaIdmercancia")
+    private List<DetalleFactura> detalleFacturaList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "mercanciaIdmercancia")
+    private List<DetalleCompra> detalleCompraList;
 
     public Mercancia() {
     }
@@ -76,9 +73,9 @@ public class Mercancia implements Serializable {
         this.idmercancia = idmercancia;
     }
 
-    public Mercancia(Integer idmercancia, Date fechadeingreso, String nombre, int stock, BigDecimal precioCompraUnidad, String precioVentaUnidad) {
+    public Mercancia(Integer idmercancia, String codigo, String nombre, int stock, BigDecimal precioCompraUnidad, BigDecimal precioVentaUnidad) {
         this.idmercancia = idmercancia;
-        this.fechadeingreso = fechadeingreso;
+        this.codigo = codigo;
         this.nombre = nombre;
         this.stock = stock;
         this.precioCompraUnidad = precioCompraUnidad;
@@ -93,12 +90,12 @@ public class Mercancia implements Serializable {
         this.idmercancia = idmercancia;
     }
 
-    public Date getFechadeingreso() {
-        return fechadeingreso;
+    public String getCodigo() {
+        return codigo;
     }
 
-    public void setFechadeingreso(Date fechadeingreso) {
-        this.fechadeingreso = fechadeingreso;
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     public String getNombre() {
@@ -125,28 +122,36 @@ public class Mercancia implements Serializable {
         this.precioCompraUnidad = precioCompraUnidad;
     }
 
-    public String getPrecioVentaUnidad() {
+    public BigDecimal getPrecioVentaUnidad() {
         return precioVentaUnidad;
     }
 
-    public void setPrecioVentaUnidad(String precioVentaUnidad) {
+    public void setPrecioVentaUnidad(BigDecimal precioVentaUnidad) {
         this.precioVentaUnidad = precioVentaUnidad;
     }
 
-    public List<MercanciaHasFactura> getMercanciaHasFacturaList() {
-        return mercanciaHasFacturaList;
+    public List<Detallepedido> getDetallepedidoList() {
+        return detallepedidoList;
     }
 
-    public void setMercanciaHasFacturaList(List<MercanciaHasFactura> mercanciaHasFacturaList) {
-        this.mercanciaHasFacturaList = mercanciaHasFacturaList;
+    public void setDetallepedidoList(List<Detallepedido> detallepedidoList) {
+        this.detallepedidoList = detallepedidoList;
     }
 
-    public Proveedor getProveedorIdproveedor() {
-        return proveedorIdproveedor;
+    public List<DetalleFactura> getDetalleFacturaList() {
+        return detalleFacturaList;
     }
 
-    public void setProveedorIdproveedor(Proveedor proveedorIdproveedor) {
-        this.proveedorIdproveedor = proveedorIdproveedor;
+    public void setDetalleFacturaList(List<DetalleFactura> detalleFacturaList) {
+        this.detalleFacturaList = detalleFacturaList;
+    }
+
+    public List<DetalleCompra> getDetalleCompraList() {
+        return detalleCompraList;
+    }
+
+    public void setDetalleCompraList(List<DetalleCompra> detalleCompraList) {
+        this.detalleCompraList = detalleCompraList;
     }
 
     @Override
@@ -173,5 +178,5 @@ public class Mercancia implements Serializable {
     public String toString() {
         return "com.mycompany.tiendadezapatos.model.Mercancia[ idmercancia=" + idmercancia + " ]";
     }
-    
+
 }
